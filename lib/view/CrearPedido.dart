@@ -29,9 +29,9 @@ class _CrearPedidoPageState extends State<CrearPedido> {
     super.dispose();
   }
 
-  /// Construcción de la interfaz de usuario.
   @override
   Widget build(BuildContext context){
+    /// Retorna el Scaffold que contiene la interfaz de usuario para crear un pedido.
     return Scaffold(
       appBar: AppBar(title: Text("Crear pedido")),
       body: Padding(
@@ -39,6 +39,9 @@ class _CrearPedidoPageState extends State<CrearPedido> {
         child: Column(
           crossAxisAlignment:  CrossAxisAlignment.start,
           children: [
+            /// Campo de texto para introducir el nombre o número de la mesa.
+            /// Incluye validación para asegurar que no esté vacío.
+            /// Si es válido, permite navegar a la página de selección de productos.
             TextField(
               controller: _mesaController,
               decoration: InputDecoration(
@@ -47,44 +50,47 @@ class _CrearPedidoPageState extends State<CrearPedido> {
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed:() async {
-                if(_mesaController.text.trim().isEmpty){
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Introduce un nombre o número de mesa válido"),
+            Tooltip(
+              message: "Pulsa para añadir productos al pedido, una vez introducido el nombre o número de mesa.",
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (_mesaController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Introduce un nombre o número de mesa válido"),
+                      ),
+                    );
+                    return;
+                  }
+
+                  /// Inicializar el ViewModel si es nulo
+                  viewModel ??= ProductoViewModel(_mesaController.text.trim());
+
+                  /// Navegar a la página de selección de productos
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SeleccionarProductosPage(),
                     ),
                   );
-                  return;
-                }
 
-                /// Inicializar el ViewModel si es nulo antes de usarlo. 
-                if(viewModel == null){
-                  viewModel = ProductoViewModel(_mesaController.text.trim());
-                }
-                final result=await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SeleccionarProductosPage(),
-                  ),
-                );
+                  if (!mounted) return;
 
-                if(!mounted) return;
+                  /// Procesar el resultado
+                  if (result != null && result is List<Map<String, dynamic>>) {
+                    for (var item in result) {
+                      Producto p = item["producto"];
+                      int cant = item["cantidad"];
 
-                /// Procesar el resultado devuelto al regresar de la página de selección de productos.
-                if (result != null && result is List<Map<String, dynamic>>) {
-                  for (var item in result) {
-                    Producto p = item["producto"];
-                    int cant = item["cantidad"];
-
-                    for (int i = 0; i < cant; i++) {
-                      viewModel?.agregarProducto(p);
+                      for (int i = 0; i < cant; i++) {
+                        viewModel?.agregarProducto(p);
+                      }
                     }
+                    setState(() {}); /// Refresca la UI con los nuevos productos
                   }
-                  setState(() {});
-                }
-              },
-              child: Text("Añadir productos"),
+                },
+                child: const Text("Añadir productos"),
+              ),
             ),
 
             SizedBox(height: 20),
@@ -94,6 +100,8 @@ class _CrearPedidoPageState extends State<CrearPedido> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
+            /// Lista de productos añadidos al pedido y total provisional.
+            /// Si no hay productos, muestra un mensaje indicándolo.
             Expanded(
               child: ListView.builder(
                 itemCount: viewModel?.totalProductos() ??0,
@@ -111,59 +119,75 @@ class _CrearPedidoPageState extends State<CrearPedido> {
               style: const TextStyle(fontSize: 18),
             ),
             SizedBox(height: 10),
+            Tooltip(
+              message: "Ver el resumen completo del pedido antes de guardarlo.",
+              child: ElevatedButton(
+              
+                /// Navegar a la página de resumen del pedido.
+                /// Valida que haya productos y un nombre de mesa antes de navegar.
+                onPressed: () {
+                  if (viewModel == null ||
+                      viewModel!.totalProductos() == 0 ||
+                      _mesaController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Introduzca valores válidos por favor.")),
+                    );
+                    return;
+                  }
 
-            ElevatedButton(
-              onPressed: () {
-                if (viewModel == null ||
-                    viewModel!.totalProductos() == 0 ||
-                    _mesaController.text.trim().isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Introduzca valores válidos por favor.")),
+                  Navigator.pushNamed(
+                    context,
+                    "/resumen",
+                    arguments: {
+                      "mesa": _mesaController.text.trim(),
+                      "productos": viewModel!.obtenerProductos(),
+                      "total": viewModel!.calcularTotal,
+                    },
                   );
-                  return;
-                }
-
-                Navigator.pushNamed(
-                  context,
-                  "/resumen",
-                  arguments: {
-                    "mesa": _mesaController.text.trim(),
-                    "productos": viewModel!.obtenerProductos(),
-                    "total": viewModel!.calcularTotal,
-                  },
-                );
-              },
-              child: const Text("Ver resumen"),
+                },
+                child: const Text("Ver resumen"),
+              ),
             ),
 
             SizedBox(height: 10),
 
-            ElevatedButton(
-              onPressed: () {
-                if (viewModel == null ||
-                    viewModel!.totalProductos() == 0 ||
-                    _mesaController.text.trim().isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Datos incompletos")),
-                  );
-                  return;
-                }
+            Tooltip(
+              message: " Guardar el pedido y volver a la pantalla principal.",
+              child:ElevatedButton(
+                /// Guardar el pedido y volver a la pantalla principal.
+                /// Valida que haya productos y un nombre de mesa antes de guardar.
+                onPressed: () {
+                  if (viewModel == null ||
+                      viewModel!.totalProductos() == 0 ||
+                      _mesaController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Datos incompletos")),
+                    );
+                    return;
+                  }
 
-                Navigator.pop(context, viewModel!.pedido);
-              },
-              child: const Text("Guardar pedido"),
-            ),
-
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text(
-                "Cancelar",
-                style: TextStyle(color: Colors.red),
+                  Navigator.pop(context, viewModel!.pedido);
+                },
+                child: const Text("Guardar pedido"),
               ),
             ),
+
+            SizedBox(height: 10),
+
+            Tooltip(
+              message: "Cancelar la creación del pedido y volver a la pantalla principal.",
+              child:TextButton(
+                /// Cancelar la creación del pedido y volver a la pantalla principal.
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Cancelar",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            )
           ],
         ),
       ),

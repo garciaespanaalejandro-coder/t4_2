@@ -79,32 +79,43 @@ class _SeleccionarProductosPageState extends State<SeleccionarProductosPage> {
         padding: EdgeInsets.all(8.0),
         child: Row(
           children: [
-            Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Cancelar"),
+            Tooltip(
+              message: "Pulsa para cancelar la selección de productos y volver atrás.",
+              /// Botón para cancelar la selección y volver atrás.
+              /// Navega de vuelta sin devolver ningún dato.
+              child:ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Cancelar"),
               ),
             ),
+            
             SizedBox(height: 10),
 
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  List<Map<String, dynamic>> seleccion = [];
+            Tooltip(
+              message: "Pulsa para confirmar la selección de productos y sus cantidades.",
+              child: Expanded(
+                /// Botón para confirmar la selección de productos.
+                /// Devuelve la lista de productos seleccionados y sus cantidades.
+                child: ElevatedButton(
+                  onPressed: () {
+                    List<Map<String, dynamic>> seleccion = [];
 
-                  cantidades.forEach((id, cant) {
-                    if (cant > 0) {
-                      final p = carta.firstWhere((e) => e.id == id);
-                      seleccion.add({"producto": p, "cantidad": cant});
-                    }
-                  });
+                    /// Construir la lista de productos seleccionados con sus cantidades.
+                    /// Solo se incluyen los productos con cantidad mayor que cero.
+                    cantidades.forEach((id, cant) {
+                      if (cant > 0) {
+                        final p = carta.firstWhere((e) => e.id == id);
+                        seleccion.add({"producto": p, "cantidad": cant});
+                      }
+                    });
 
-                  Navigator.pop(context, seleccion);
-                },
-                child: const Text("Confirmar"),
+                    Navigator.pop(context, seleccion);
+                  },
+                  child: const Text("Confirmar"),
+                ),
               ),
             ),
           ],

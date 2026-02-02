@@ -12,13 +12,20 @@ class ResumenPedidoPage extends StatelessWidget {
   /// Construye la interfaz de usuario de la página de resumen del pedido.
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
+    /// Obtiene los argumentos pasados a la ruta.
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    /// Extrae los datos del pedido de los argumentos.
     String mesa = args["mesa"];
+
+    /// Extrae la lista de productos en el pedido.
     List<Producto> productos = args["productos"];
+
+    /// Extrae el total del pedido.
     double total = args["total"];
 
+    /// Retorna el Scaffold que contiene la interfaz de usuario del resumen del pedido.
     return Scaffold(
       appBar: AppBar(
         title: const Text("Resumen detallado"),
@@ -27,6 +34,8 @@ class ResumenPedidoPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
+
+      /// Cuerpo de la página que muestra los detalles del pedido.
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -41,6 +50,8 @@ class ResumenPedidoPage extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
+            /// Lista de productos en el pedido.
+            /// Cada producto se muestra con su nombre y precio.
             Expanded(
               child: ListView.builder(
                 itemCount: productos.length,

@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body:
           widget.pedidos.isEmpty? 
-            const Center(child: Text("No hay pedidos todavía"))
+            const Center(child: Text("No hay pedidos todavía, pulsa el botón + para crear uno nuevo."))
           :ListView.builder(
               itemCount: widget.pedidos.length,
               itemBuilder: (context, index) {
@@ -46,7 +46,9 @@ class _HomePageState extends State<HomePage> {
             ),
       
       /// Botón para crear un nuevo pedido.
+      /// Navega a la página CrearPedido y añade el nuevo pedido a la lista si se crea uno.
       floatingActionButton: FloatingActionButton(
+        tooltip: 'Pulsa para crear un pedido',
         onPressed:() async {
           final nuevoPedido = await Navigator.push(
             context,
