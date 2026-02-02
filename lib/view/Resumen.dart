@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import '../model/Producto.dart';
 
+/// Página para mostrar el resumen detallado de un pedido. 
+/// Muestra la mesa, los productos seleccionados y el total del pedido.
+/// Recibe los datos a través de los argumentos de la ruta.
 class ResumenPedidoPage extends StatelessWidget {
+  /// Constructor de la clase ResumenPedidoPage.
+  /// @param key Clave opcional para el widget.
   const ResumenPedidoPage({super.key});
 
+  /// Construye la interfaz de usuario de la página de resumen del pedido.
   @override
   Widget build(BuildContext context) {
     final args =

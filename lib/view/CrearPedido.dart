@@ -3,24 +3,33 @@ import '../viewmodel/ProductoViewModel.dart';
 import '../model/Producto.dart';
 import '../view/ListaProducto.dart';
 
-
+/// Página para crear un nuevo pedido, permitiendo seleccionar productos y ver un resumen provisional. 
+/// Utiliza el ViewModel ProductoViewModel para gestionar la lógica del pedido.
+/// Permite navegar a la página de resumen del pedido y guardar el pedido.
 class CrearPedido extends StatefulWidget {
+  /// Constructor de la clase CrearPedido.
+  /// @param key Clave opcional para el widget.
   const CrearPedido({super.key});
 
   @override
   State<CrearPedido> createState() => _CrearPedidoPageState();
 }
 
+/// Estado de la página CrearPedido.
+/// Gestiona la entrada del usuario, la selección de productos y la visualización del resumen provisional
+/// del pedido.
 class _CrearPedidoPageState extends State<CrearPedido> {
   final TextEditingController _mesaController = TextEditingController();
   ProductoViewModel? viewModel;
 
+  /// Liberar recursos al desechar el widget.
   @override
   void dispose(){
     _mesaController.dispose();
     super.dispose();
   }
 
+  /// Construcción de la interfaz de usuario.
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -49,6 +58,7 @@ class _CrearPedidoPageState extends State<CrearPedido> {
                   return;
                 }
 
+                /// Inicializar el ViewModel si es nulo antes de usarlo. 
                 if(viewModel == null){
                   viewModel = ProductoViewModel(_mesaController.text.trim());
                 }
@@ -61,6 +71,7 @@ class _CrearPedidoPageState extends State<CrearPedido> {
 
                 if(!mounted) return;
 
+                /// Procesar el resultado devuelto al regresar de la página de selección de productos.
                 if (result != null && result is List<Map<String, dynamic>>) {
                   for (var item in result) {
                     Producto p = item["producto"];
@@ -144,7 +155,6 @@ class _CrearPedidoPageState extends State<CrearPedido> {
               child: const Text("Guardar pedido"),
             ),
 
-            // Cancelar
             TextButton(
               onPressed: () {
                 Navigator.pop(context);

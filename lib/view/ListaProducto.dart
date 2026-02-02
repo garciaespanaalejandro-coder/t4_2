@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import '../model/Producto.dart';
 
+/// Página para seleccionar productos de la carta y sus cantidades. 
 class SeleccionarProductosPage extends StatefulWidget {
+
+  /// Constructor de la clase SeleccionarProductosPage.
+  /// @param key Clave opcional para el widget.
   const SeleccionarProductosPage({super.key});
 
   @override
@@ -9,7 +13,10 @@ class SeleccionarProductosPage extends StatefulWidget {
       _SeleccionarProductosPageState();
 }
 
+/// Estado de la página SeleccionarProductosPage. 
 class _SeleccionarProductosPageState extends State<SeleccionarProductosPage> {
+
+  /// Lista de productos disponibles en la carta. 
   List<Producto> carta = [
     Producto(id: 1, nombre: "Café", precio: 1.20),
     Producto(id: 2, nombre: "Té", precio: 1.10),
@@ -24,6 +31,8 @@ class _SeleccionarProductosPageState extends State<SeleccionarProductosPage> {
 
   Map<int, int> cantidades= {};
   
+
+  /// Construcción de la interfaz de usuario.
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -50,6 +59,7 @@ class _SeleccionarProductosPageState extends State<SeleccionarProductosPage> {
                     });
                   },
                 ),
+                /// Cantidad seleccionada
                 Text("${cantidades[p.id]}"),
                 IconButton(
                   icon: const Icon(Icons.add),
@@ -64,6 +74,7 @@ class _SeleccionarProductosPageState extends State<SeleccionarProductosPage> {
           );
         },
       ),
+      /// Barra inferior con botones de cancelar y confirmar.
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(8.0),
         child: Row(
